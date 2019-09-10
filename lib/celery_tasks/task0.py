@@ -1,4 +1,4 @@
-from .celery import cel_app
+from extensions import cel_app
 
 
 @cel_app.task
