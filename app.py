@@ -4,6 +4,7 @@ from flask import Flask
 from extensions import db, redis_store, cel_app
 from kline_fill import routers
 from lib.celery_tasks import celery_config
+from lib.sql_models.base_model import BaseModel
 
 _default_instance_path = pathlib.Path(__file__).parents[0].joinpath('kline_fill', 'instance')
 
@@ -28,6 +29,7 @@ def configure_blueprint(app):
 def configure_extensions(app):
     # db
     db.init_app(app)
+    db.BaseModel = BaseModel
 
     # redis
     redis_store.init_app(app)

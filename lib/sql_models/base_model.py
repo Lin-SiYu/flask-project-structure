@@ -16,4 +16,3 @@ class BaseModel(db.Model):
     def get_dict(self):
         data = {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
         return data
-
