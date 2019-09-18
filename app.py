@@ -1,7 +1,7 @@
 import pathlib
 from flask import Flask
 
-from extensions import db, redis_store, cel_app
+from extensions import db, redis_store, cel_app, mongo
 from kline_fill import routers
 from lib.celery_tasks import celery_config
 from lib.sql_models.base_model import BaseModel
@@ -33,6 +33,9 @@ def configure_extensions(app):
 
     # redis
     redis_store.init_app(app)
+
+    # mongo
+    mongo.init_app(app)
 
 
 def configure_celery(app, celery):

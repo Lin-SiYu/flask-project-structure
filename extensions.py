@@ -1,4 +1,5 @@
 from celery import Celery
+from flask_pymongo import PyMongo
 from flask_sqlalchemy import SQLAlchemy
 
 # 防止不同环境下的包不同
@@ -12,3 +13,5 @@ db = SQLAlchemy()
 redis_store = FlaskRedis()
 
 cel_app = Celery('kline-fill')
+
+mongo = PyMongo()
