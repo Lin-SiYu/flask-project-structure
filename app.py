@@ -40,7 +40,6 @@ def configure_extensions(app):
 
 def configure_celery(app, celery):
     celery.config_from_object(celery_config)
-
     TaskBase = celery.Task
 
     class ContextTask(TaskBase):

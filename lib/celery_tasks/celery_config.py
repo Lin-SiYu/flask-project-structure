@@ -7,8 +7,9 @@ CELERY_INCLUDE = ['lib.celery_tasks.%s' % task_file.name.split('.')[0] for task_
 
 # 建议直接使用IP，若使用localhost会降低速度
 # BROKER_URL = 'redis://127.0.0.1:6379/13'
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/14'
-
+# CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/14'
+CELERY_RESULT_BACKEND = 'redis://localhost/14'
+# CELERY_IGNORE_RESULT = True
 BROKER_URL = 'pyamqp://'
 # CELERY_RESULT_BACKEND = 'db+mysql+pymysql://test:test123@127.0.0.1/mysqlalchey'
 
