@@ -5,13 +5,9 @@ from flask_restful import Api as BaseApi
 from flask.signals import got_request_exception
 from werkzeug.exceptions import HTTPException
 from eggit.flask_restful_response import error
+
 from kline_fill.exceptions.service_exception import ServiceException
 from kline_fill.exceptions.system_exception import SystemException
-from jwt.exceptions import (PyJWTError, ExpiredSignatureError,
-                            InvalidSignatureError)
-from flask_jwt_extended.exceptions import (
-    JWTExtendedException, NoAuthorizationError, RevokedTokenError,
-    InvalidHeaderError)
 
 
 class Api(BaseApi):
@@ -36,20 +32,6 @@ class Api(BaseApi):
             result = error(msg=str(e), error_code=100000, http_status_code=code)
         elif isinstance(e, ServiceException) or isinstance(e, SystemException):
             result = error(msg=str(e), error_code=e.error_code, http_status_code=code)
-        elif issubclass(type(e), JWTExtendedException):
-            code = 401
-            if isinstance(e, NoAuthorizationError):
-                result = error(msg=str(e), error_code=0, http_status_code=code)
-            elif isinstance(e, RevokedTokenError):
-                result = error(msg=str(e), error_code=2, http_status_code=code)
-            elif isinstance(e, InvalidHeaderError):
-                result = error(msg=str(e), error_code=3, http_status_code=code)
-        elif issubclass(type(e), PyJWTError):
-            code = 401
-            if isinstance(e, ExpiredSignatureError):
-                result = error(msg=str(e), error_code=1, http_status_code=code)
-            elif isinstance(e, InvalidSignatureError):
-                result = error(msg=str(e), error_code=4, http_status_code=code)
         else:
             result = error(
                 msg=str(e) if not os.environ.get('PRODUCTION_CONFIG') else 'No response',

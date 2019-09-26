@@ -1,5 +1,4 @@
 import importlib
-
 from kline_fill.instance.kline_conf import KLINE_EXCHANGE_DISPATCH as kline_dispatch
 
 
@@ -19,4 +18,6 @@ def kline_distribution(data_dic):
         mod = importlib.import_module(mpath)
         cla_obj = getattr(mod, mclass)
         # kline 数据 mongodb 存储
-        return cla_obj(data_dic).data_storage()
+        obj = cla_obj()
+        obj(data_dic)
+        return obj.data_storage()

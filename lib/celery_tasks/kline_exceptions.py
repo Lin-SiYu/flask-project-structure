@@ -11,16 +11,9 @@ def get_kline_exceptions():
     :return:
     '''
     query_data = KlineException.query.filter_by(status='0').all()
-    subtasks = []
     if query_data:
         # 补齐k线业务
         for obj in query_data:
             db.session.add(obj)
-            task_id = kline_handler.delay(obj)
-            subtasks.append(task_id)
-
-    res_info = dict(
-        subtasks=subtasks,
-        status='SUCCESS'
-    )
-    return res_info
+            data = obj.get_dict()
+            kline_handler.delay(data)
