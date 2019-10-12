@@ -1,8 +1,6 @@
 from app import create_app
 from extensions import cel_app
-from lib.celery_tasks.celery_example import nums_add
-from lib.celery_tasks.mongo_tasks import mongo_example
-from test.task_status import get_status
+from lib.celery_tasks.celery_example import nums_add, mongo_example
 
 app = create_app()
 
@@ -47,4 +45,3 @@ if __name__ == '__main__':
     # res = ws_test('wss://api.huobi.pro/ws')
     # print(res)
     # ws_test.delay('wss://api.huobi.pro/ws')
-

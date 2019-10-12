@@ -14,7 +14,7 @@ import importlib
 import traceback
 from flask import Blueprint
 
-from kline_fill.handlers import Api
+from kline_filler.handlers import Api
 
 
 def register_blueprint(app):

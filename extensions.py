@@ -1,14 +1,8 @@
 from celery import Celery
 from flask_pymongo import PyMongo
 from flask_sqlalchemy import SQLAlchemy
-
-# 防止不同环境下的包不同
+from flask_redis import FlaskRedis
 from lib.mq.mq_base import MqBase
-
-try:
-    from flask_redis import FlaskRedis
-except ImportError:
-    from flask_redis import Redis as FlaskRedis
 
 db = SQLAlchemy()
 

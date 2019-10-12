@@ -10,11 +10,11 @@ class ExampleHandler(Resource):
         return ok(data='hello example')
 
     def post(self):
-        # print(request.get_json())
+        print(request.get_json())
         # print(request.args)
-        a = request.args['a']
-        b = request.args['b']
-        res = nums_add.delay(a, b)
-        print(res.id)
-        print(res.status)
+        # a = request.args['a']
+        # b = request.args['b']
+        # res = nums_add.delay(a, b)
+        # print(res.id)
+        # print(res.status)
         return ok(data='ok')

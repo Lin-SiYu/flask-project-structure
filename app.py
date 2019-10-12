@@ -2,8 +2,8 @@ import pathlib
 from flask import Flask
 
 from extensions import db, redis_store, cel_app, mongo, mq
-from kline_fill import routers
-from kline_fill.logs.logger import log_init
+from kline_filler import routers
+from kline_filler.logs.logger import log_init
 from lib.celery_tasks import celery_config
 from lib.mq.mq_consumers import consumer
 from lib.mq.mq_register import register

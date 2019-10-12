@@ -1,7 +1,7 @@
 import re
 import pandas
-from kline_fill.service.base_kline import BaseKline
-from kline_fill.service.kline_get import kline_restful
+from kline_filler.service.base_kline import BaseKline
+from kline_filler.service.kline_get import kline_restful
 
 
 class BinanceKline(BaseKline):

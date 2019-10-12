@@ -1,7 +1,7 @@
 import json
 from threading import Thread
 
-from kline_fill.logs.logger import log
+from kline_filler.logs.logger import log
 from lib.mq.flask_pika import Pika
 
 

@@ -1,4 +1,4 @@
-from kline_fill.logs.logger import log
+from kline_filler.logs.logger import log
 
 
 class MQConsumer:

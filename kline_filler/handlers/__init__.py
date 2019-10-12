@@ -5,9 +5,8 @@ from flask_restful import Api as BaseApi
 from flask.signals import got_request_exception
 from werkzeug.exceptions import HTTPException
 from eggit.flask_restful_response import error
-
-from kline_fill.exceptions.service_exception import ServiceException
-from kline_fill.exceptions.system_exception import SystemException
+from kline_filler.exceptions.service_exception import ServiceException
+from kline_filler.exceptions.system_exception import SystemException
 
 
 class Api(BaseApi):

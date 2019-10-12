@@ -1,5 +1,5 @@
 from extensions import cel_app
-from kline_fill.service.kline_distribute import kline_distribution
+from kline_filler.service.kline_distribute import kline_distribution
 from lib.sql_models.table_kline_exception import KlineException
 
 

@@ -2,8 +2,8 @@ import pandas
 from pymongo.errors import OperationFailure
 
 from extensions import mongo, db
-from kline_fill.logs.logger import log
-from kline_fill.service.kline_get import kline_with_ws, kline_with_api
+from kline_filler.logs.logger import log
+from kline_filler.service.kline_get import kline_with_ws, kline_with_api
 from lib.sql_models.table_kline_exception import KlineException
 from lib.tools import kline_granularity
 

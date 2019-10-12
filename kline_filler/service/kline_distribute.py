@@ -1,5 +1,5 @@
 import importlib
-from kline_fill.instance.kline_conf import KLINE_EXCHANGE_DISPATCH as kline_dispatch
+from kline_filler.instance.kline_conf import KLINE_EXCHANGE_DISPATCH as kline_dispatch
 
 
 def kline_distribution(data_dic):
