@@ -1,5 +1,7 @@
 import time
 
+import pandas
+
 from kline_fill.service.base_kline import BaseKline
 from kline_fill.service.kline_get import kline_restful
 
@@ -40,7 +42,13 @@ class HuobiKline(BaseKline):
                 kline_res = kline_dic['data']
                 if not kline_res:
                     return kline_restful(self.kline_info, 2001, data=kline_res)
-                return kline_restful(self.kline_info, 2000, data=kline_res)
+                # huobi 返回值的存储规则处理
+                df = pandas.DataFrame.from_dict(kline_res)
+                df = df.rename(columns={'id': '_id'})
+                # amount 和 vol 对换
+                df['vol'], df['amount'] = round(df['amount'], 8), round(df['vol'], 8)
+                final_kline = df.to_dict('records')
+                return kline_restful(self.kline_info, 2000, data=final_kline)
             elif kline_dic['status'] == 'error':
                 return kline_restful(self.kline_info, 4000, data=kline_dic['err-msg'])
         except KeyError as e:

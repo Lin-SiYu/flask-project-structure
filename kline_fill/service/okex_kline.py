@@ -1,6 +1,7 @@
+import time
+import pandas
 from kline_fill.service.kline_get import kline_restful
-from lib.tools import timestamp2iso, get_dic
-
+from lib.tools import timestamp2iso
 from kline_fill.service.base_kline import BaseKline
 
 
@@ -32,12 +33,18 @@ class OkexKline(BaseKline):
     def kline_res_handle(self, kline_acquired):
         if isinstance(kline_acquired, list):
             if kline_acquired:
-                kline_list = []
-                parameters_list = ['time', 'open', 'high', 'low', 'close', 'volume']
-                for values_list in kline_acquired:
-                    kline_dic = get_dic(values_list, parameters_list)
-                    kline_list.append(kline_dic)
-                return kline_restful(self.kline_info, 2000, data=kline_list)
+                # okex 返回值的存储规则处理
+                parameters_list = ['_id', 'open', 'high', 'low', 'close', 'vol']
+                df = pandas.DataFrame(kline_acquired, columns=parameters_list)
+                for column in parameters_list:
+                    if column == '_id':
+                        df['_id'] = df['_id'].apply(lambda x: time.mktime(time.strptime(x, "%Y-%m-%dT%H:%M:%S.000Z")))
+                        df['_id'] = df['_id'].astype('int32')
+                        continue
+                    data = df[column].astype('double')
+                    df[column] = round(data, 8)
+                final_kline = df.to_dict('records')
+                return kline_restful(self.kline_info, 2000, data=final_kline)
             return kline_restful(self.kline_info, 2001, data=kline_acquired)
         if isinstance(kline_acquired, dict):
             # {'code': 30032, 'message': 'The currency pair does not exist'}

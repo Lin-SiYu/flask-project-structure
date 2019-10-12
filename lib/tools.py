@@ -38,3 +38,26 @@ def get_dic(values, *keys):
     {'k1': 'v1', 'k2': 'v2'}
     '''
     return dict(zip(*keys, values))
+
+
+def unix_time(dt):
+    """
+        Return unix time in microseconds
+    """
+    epoch = datetime.datetime.utcfromtimestamp(0)
+    delta = dt - epoch
+    return int((delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10 ** 6) / 10 ** 6)
+
+
+def unix_time_millis(dt):
+    """
+        Return unix time in milliseconds
+    """
+    return round(unix_time(dt) * 1000.0)
+
+
+def unix_time_millis_now():
+    """
+        Return current unix time in milliseconds
+    """
+    return unix_time_millis(datetime.datetime.utcnow())

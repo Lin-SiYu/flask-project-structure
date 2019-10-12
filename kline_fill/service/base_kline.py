@@ -1,4 +1,8 @@
+import pandas
+from pymongo.errors import OperationFailure
+
 from extensions import mongo, db
+from kline_fill.logs.logger import log
 from kline_fill.service.kline_get import kline_with_ws, kline_with_api
 from lib.sql_models.table_kline_exception import KlineException
 from lib.tools import kline_granularity
@@ -6,9 +10,12 @@ from lib.tools import kline_granularity
 
 class BaseKline:
     def __init__(self):
+        # 规则单位非交易所规则单位，请务必使用 min/hour/day/week/mon
         self.period_rule = []
         self.request_address = ''
+        # 单次请求返回数据
         self.per_count = 0
+        # https or websocket
         self.request_type = 'https'
 
     def __call__(self, req_data, *args, **kwargs):
@@ -44,12 +51,17 @@ class BaseKline:
         返回 kline_restful 格式数据
         :return: kline_restful
             kline_info 后处理数据，非原库数据，end-time 经过处理
+            data 必须手动处理成下列相同 key-value 格式进行存储
         e.g.
             {
                 'kline_info':{'id': 1, 'exchange': 'huobi', 'coin_pair': 'BTC/USDT', 'period': '1min',
                                 'from_time': 1569357600, 'end_time': 1569369600, 'status': 2000},
                 'msg':'ok',
-                'data':[{},{},……,]
+                'data':[{
+                        '_id': 1569677160, 'open': 0.00808471, 'high': 0.00808471,
+                        'low': 0.0080742, 'close': 0.00808087, 'vol': 9884.7},
+                        {},{},……,
+                       ]
             }
 
         '''
@@ -96,10 +108,12 @@ class BaseKline:
 
         '''
         kline_res = self.kline_res
+        kline_data = kline_res['data']
         kline_info = kline_res['kline_info']
-        coll_name = 'k_%s_%s' % (kline_info['coin_pair'].replace('/', ''), kline_info['period'])
+
         if kline_info['status'] == 2000:
-            mongo.cx[kline_info['exchange']][coll_name].insert_many(kline_res['data'])
+            # mongo 存储规则匹配，规则统一后再进行存储
+            self._mongo_storage(kline_info, kline_data)
 
         # 查询异常，则将该条数据入库，等待下次执行推送处理
         # 不对参数不正确的查询错误（4000）进行入库，防止错误增生。
@@ -119,7 +133,31 @@ class BaseKline:
             db.session.commit()
 
         res = dict(
-            end_time=kline_res['kline_info']['end_time'],
-            status=kline_res['kline_info']['status'],
+            end_time=kline_info['end_time'],
+            status=kline_info['status'],
         )
         return res
+
+    def _mongo_storage(self, kline_info, kline_data):
+        '''
+        处理mongodb存储规则,不匹配则抛错
+            - _id ：int32 为10位时间戳，若存在则不进行修改
+            - open/high/low/close/vol :Double
+        :return:
+        '''
+        exchange = kline_info['exchange']
+        coll_name = 'k_%s_%s' % (kline_info['coin_pair'].replace('/', ''), kline_info['period'])
+        doc = mongo.cx[exchange][coll_name]
+        try:
+            # 相同数据的异常处理
+            df = pandas.DataFrame.from_dict(kline_data)
+            id_list = df._id.to_list()
+            mongo_objs = doc.find({"_id": {"$in": id_list}})
+            obj_ids = [obj['_id'] for obj in mongo_objs]
+            df = df[~ df._id.isin(obj_ids)]
+            insert_data = df.to_dict('records')
+            if insert_data:
+                doc.insert_many(insert_data)
+        except OperationFailure as e:
+            log.error('ERROR:%s - Kline data does not comply with storage rules！'
+                      'Duplicate data queries may fail because the data is not refreshed.' % e)
