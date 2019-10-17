@@ -19,6 +19,14 @@ def kline_granularity(period):
     return units_multiplier[period_unit] * period_num
 
 
+def period_unit_transform(old_period, units_map=None):
+    if not units_map:
+        units_map = {'min': 'm', 'hour': 'h', 'day': 'd', 'week': 'w', 'mon': 'M', 'year': 'Y'}
+    period_unit = re.findall(r'\D+', old_period)[0]
+    period = old_period.replace(period_unit, units_map[period_unit])
+    return period
+
+
 def timestamp2iso(ts, tt=None, tz=datetime.timezone.utc):
     dtime = datetime.datetime.fromtimestamp(ts, tz=tz)
     iso_time = dtime.isoformat()
