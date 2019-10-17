@@ -12,13 +12,14 @@ from lib.sql_models.base_model import BaseModel
 _default_instance_path = pathlib.Path(__file__).parents[0].joinpath('kline_filler', 'instance')
 
 
-def create_app():
+def create_app(activate_mq=True):
     app = Flask(__name__, instance_relative_config=True, instance_path=_default_instance_path)
     configure_app(app)
     configure_blueprint(app)
     configure_extensions(app)
     configure_celery(app, cel_app)
-    configure_rabbitmq(app)
+    if activate_mq:
+        configure_rabbitmq(app)
     return app
 
 

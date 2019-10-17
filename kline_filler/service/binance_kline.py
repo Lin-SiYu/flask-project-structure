@@ -1,7 +1,7 @@
-import re
 import pandas
 from kline_filler.service.base_kline import BaseKline
 from kline_filler.service.kline_get import kline_restful
+from lib.tools import period_unit_transform
 
 
 class BinanceKline(BaseKline):
@@ -27,10 +27,7 @@ class BinanceKline(BaseKline):
         :return:
         '''
         coin_pair = self.coin_pair.replace('/', '')
-
-        period_units = {'min': 'm', 'hour': 'h', 'day': 'd', 'week': 'w', 'mon': 'M'}
-        period_unit = re.findall(r'\D+', self.period)[0]
-        period = self.period.replace(period_unit, period_units[period_unit])
+        period = period_unit_transform(self.period)
 
         request_dic = {
             'symbol': coin_pair,
@@ -47,6 +44,11 @@ class BinanceKline(BaseKline):
                 parameters_list = ['_id', 'open', 'high', 'low', 'close', 'vol', 'close_time',
                                    'quote_asset_volume', 'trades_num', 'taker_buy_base', 'taker_buy_quote', 'ignore']
                 df = pandas.DataFrame(kline_acquired, columns=parameters_list).iloc[:, 0:6]
+
+                if self.period == '1min':
+                    df['ts'] = df['_id']
+                    df['ts'] = df['ts'].astype('int64')
+
                 for column in parameters_list[0:6]:
                     if column == '_id':
                         df[column] = (df[column] / 1000).astype('int32')

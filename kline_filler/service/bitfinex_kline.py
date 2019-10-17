@@ -2,6 +2,7 @@ import re
 import pandas
 from kline_filler.service.base_kline import BaseKline
 from kline_filler.service.kline_get import kline_restful, kline_with_api
+from lib.tools import period_unit_transform
 
 
 class BitfinexKline(BaseKline):
@@ -28,8 +29,7 @@ class BitfinexKline(BaseKline):
         coin_pair = 't%s' % self.coin_pair.replace('/', '')
 
         period_units = {'min': 'm', 'hour': 'h', 'day': 'D', 'mon': 'M'}
-        period_unit = re.findall(r'\D+', self.period)[0]
-        period = self.period.replace(period_unit, period_units[period_unit])
+        period = period_unit_transform(self.period, period_units)
 
         self.request_address = self.request_address.format(period=period, coin_pair=coin_pair)
 
@@ -95,6 +95,11 @@ class BitfinexKline(BaseKline):
     def df_handle(self, kline_acquired):
         parameters_list = ['_id', 'open', 'close', 'high', 'low', 'vol']
         df = pandas.DataFrame(kline_acquired, columns=parameters_list)
+
+        if self.period == '1min':
+            df['ts'] = df['_id']
+            df['ts'] = df['ts'].astype('int64')
+
         df['_id'] = (df['_id'] / 1000).astype('int32')
         for column in parameters_list:
             if column == '_id':

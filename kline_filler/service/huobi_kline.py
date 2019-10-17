@@ -47,6 +47,8 @@ class HuobiKline(BaseKline):
                 df = df.rename(columns={'id': '_id'})
                 # amount 和 vol 对换
                 df['vol'], df['amount'] = round(df['amount'], 8), round(df['vol'], 8)
+                if self.period == '1min':
+                    df['ts'] = (df['_id'] * 1000).astype('int64')
                 final_kline = df.to_dict('records')
                 return kline_restful(self.kline_info, 2000, data=final_kline)
             elif kline_dic['status'] == 'error':

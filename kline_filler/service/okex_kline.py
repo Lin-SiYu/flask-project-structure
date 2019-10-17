@@ -36,13 +36,18 @@ class OkexKline(BaseKline):
                 # okex 返回值的存储规则处理
                 parameters_list = ['_id', 'open', 'high', 'low', 'close', 'vol']
                 df = pandas.DataFrame(kline_acquired, columns=parameters_list)
+
+                df['_id'] = df['_id'].apply(lambda x: time.mktime(time.strptime(x, "%Y-%m-%dT%H:%M:%S.000Z")))
+                if self.period == '1min':
+                    df['ts'] = (df['_id'] * 1000).astype('int64')
+
                 for column in parameters_list:
                     if column == '_id':
-                        df['_id'] = df['_id'].apply(lambda x: time.mktime(time.strptime(x, "%Y-%m-%dT%H:%M:%S.000Z")))
                         df['_id'] = df['_id'].astype('int32')
                         continue
                     data = df[column].astype('double')
                     df[column] = round(data, 8)
+
                 final_kline = df.to_dict('records')
                 return kline_restful(self.kline_info, 2000, data=final_kline)
             return kline_restful(self.kline_info, 2001, data=kline_acquired)
