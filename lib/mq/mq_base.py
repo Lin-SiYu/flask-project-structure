@@ -62,10 +62,11 @@ class MqBase:
     def thread_sub(self, consumer_callback=None, queue_name='', *args, **kwargs):
         Thread(target=self._subscribe, args=(consumer_callback, queue_name, *args), kwargs=kwargs, daemon=True).start()
 
-    def _subscribe(self, consumer_callback=None, queue_name='', *args, **kwargs):
+    def _subscribe(self, consumer_callback=None, queue_name='', no_ack=True, *args, **kwargs):
         # 订阅指定队列
         self._channel = self.fpika.channel()
-        self._channel.basic_consume(consumer_callback=consumer_callback, queue=queue_name, no_ack=True)
+        self._channel.basic_consume(consumer_callback=consumer_callback, queue=queue_name, no_ack=no_ack)
+
         if not self._has_consuming:
             self._channel.start_consuming()
             self._has_consuming = True

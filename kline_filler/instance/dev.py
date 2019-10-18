@@ -14,13 +14,13 @@ FLASK_PIKA_PARAMS = {
 }
 
 # optional pooling params
-FLASK_PIKA_POOL_PARAMS = {
-    'pool_size': 8,
-    'pool_recycle': 600
-}
+# FLASK_PIKA_POOL_PARAMS = {
+#     'pool_size': 8,
+#     'pool_recycle': 600
+# }
 
 MQ_EXCHANGES = {
-    'fanout': ['Example','Example2'],
+    'fanout': ['KlineException'],
     'topic': [],
     'direct': []
 }
