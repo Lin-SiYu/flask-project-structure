@@ -23,7 +23,7 @@ CREATE TABLE `kline_exception` (
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 ```
 
-![image-20191107150100269](/Users/lin/Documents/Kline-Filler-Server%20%E6%96%87%E6%A1%A3.assets/image-20191107150100269.png)
+![image-20191107150100269](Kline-Filler-Server.assets/image-20191107150100269.png)
 
 | 字段名    | 解释                              |
 | --------- | --------------------------------- |
